@@ -1,0 +1,20 @@
+button {
+    width: 260px;           /* passend zur Breite des Boards */
+    height: 50px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+button:hover {
+    background-color: #f0f0f0;
+}
+
+button:active {
+    background-color: #e0e0e0;
+}
