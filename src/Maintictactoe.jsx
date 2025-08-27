@@ -2,69 +2,90 @@ import Gamemap from "./gamemap.jsx";
 import {useEffect, useState} from "react";
 
 export default function Maintictactoe() {
-    const [value, setValue] = useState({
-        a: null,
-        b: null,
-        c: null,
-        d: null,
-        e: null,
-        f: null,
-        g: null,
-        h: null,
-        i: null
-    });
+    const size = 5;
+    const [board,setBoard] = useState(Array(size*size).fill(null))
     const [turn, setTurn] = useState("X");
     const [gameOver,setGamover] = useState(false)
     const [text,setText] = useState("")
+// Mache Zug
+    function Makemove(index) {
+        if (board[index]) return;
 
-    function Makemove(field) {
-        if (!value[field] && gameOver === false) {
-            setValue(prev => ({
-                ...prev,
-                [field]: turn
-            }));
-            setTurn(prev => (prev === "X" ? "O" : "X"));
-            setText(`Spieler ${turn === "X" ? "O" : "X"} ist dran`)
-        }
+        const newBoard = [...board];
+        newBoard[index] = turn;
+        setBoard(newBoard);
+
+        const nextTurn = turn === "X" ? "O" : "X";
+        setTurn(nextTurn);
+        setText(`Spieler ${nextTurn} ist dran`);
     }
+// Neustart
     function Reset(){
-        setValue({
-            a: null,
-            b: null,
-            c: null,
-            d: null,
-            e: null,
-            f: null,
-            g: null,
-            h: null,
-            i: null
-
-        })
+        setBoard(Array(size*size).fill(null))
         setTurn("X");
         setGamover(false);
         setText("");
     }
+// Gewinnenfunktion
+    function CheckWinner(allLines,Board){
 
-    function CheckWinner(){
-        if (
-            // Horizontale Reihen
-            (value.a === value.b && value.b === value.c && value.a !== null) ||
-            (value.d === value.e && value.e === value.f && value.d !== null) ||
-            (value.g === value.h && value.h === value.i && value.g !== null) ||
-
-            // Vertikale Spalten
-            (value.a === value.d && value.d === value.g && value.a !== null) ||
-            (value.b === value.e && value.e === value.h && value.b !== null) ||
-            (value.c === value.f && value.f === value.i && value.c !== null) ||
-
-            // Diagonalen
-            (value.a === value.e && value.e === value.i && value.a !== null) ||
-            (value.c === value.e && value.e === value.g && value.c !== null)
-        )
-            return true
-        else return false
     }
+// Alle Linien hinzufügen
+    function Getlines(){
+        const winLength = 4;
+        const horizontalLines = [];
+        const verticalLines = [];
+        const diagonal1Lines = [];
+        const diagonal2Lines = [];
+// Reihen
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col <= size - winLength; col++) {
+                const line = [];
+                for (let i = 0; i < winLength; i++) {
+                    line.push(row * size + (col + i));
+                }
+                horizontalLines.push(line);
+            }
+        }
+// Spalten
+        for (let col = 0; col < size; col++) {
+            for (let row = 0; row <= size - winLength; row++) {
+                const line = [];
+                for (let i = 0; i < winLength; i++) {
+                    line.push((row + i) * size + col);
+                }
+                verticalLines.push(line);
+            }
+        }
+// Diagonale
+        for (let row = 0; row <= size - winLength; row++) {
+            for (let col = 0; col <= size - winLength; col++) {
+                const line = [];
+                for (let i = 0; i < winLength; i++) {
+                    line.push((row + i) * size + (col + i));
+                }
+                diagonal1Lines.push(line);
+            }
+        }
 
+// Diagonale
+        for (let row = 0; row <= size - winLength; row++) {
+            for (let col = winLength - 1; col < size; col++) {
+                const line = [];
+                for (let i = 0; i < winLength; i++) {
+                    line.push((row + i) * size + (col - i));
+                }
+                diagonal2Lines.push(line);
+            }
+        }
+
+
+        const allLines = [horizontalLines,verticalLines,diagonal1Lines,diagonal2Lines];
+        return allLines
+
+        console.log(allLines)
+    }
+// Checke auf Sieg
     useEffect(() => {
         if (CheckWinner()=== true) {
             setGamover(true)
@@ -72,20 +93,19 @@ export default function Maintictactoe() {
 
 
         }
-    }, [value]);
+    }, [board]);
+
 
     return (
         <>
             <div className="board">
-                <Gamemap onClick={() => Makemove("a")} value={value.a}/>
-                <Gamemap onClick={() => Makemove("b")} value={value.b}/>
-                <Gamemap onClick={() => Makemove("c")} value={value.c}/>
-                <Gamemap onClick={() => Makemove("d")} value={value.d}/>
-                <Gamemap onClick={() => Makemove("e")} value={value.e}/>
-                <Gamemap onClick={() => Makemove("f")} value={value.f}/>
-                <Gamemap onClick={() => Makemove("g")} value={value.g}/>
-                <Gamemap onClick={() => Makemove("h")} value={value.h}/>
-                <Gamemap onClick={() => Makemove("i")} value={value.i}/>
+                {board.map((cell,index) => (
+                    <Gamemap
+                        key={index}
+                        value={cell}
+                        onClick={() => Makemove(index)}
+                    />
+                ))}
             </div>
 
             <div>
@@ -94,6 +114,7 @@ export default function Maintictactoe() {
             <div>
                 {text}
             </div>
+            <button onClick={Getlines}></button>
         </>
     )
 }
