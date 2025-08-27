@@ -1,20 +1,30 @@
-button {
-    width: 260px;           /* passend zur Breite des Boards */
-    height: 50px;
-    font-size: 20px;
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 80px); /* 5 Spalten */
+    grid-template-rows: repeat(5, 80px);    /* 5 Reihen */
+    gap: 5px;
+    margin-bottom: 20px;
+    justify-content: center; /* zentriert das Grid horizontal */
+}
+
+.board button {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem; /* etwas kleiner, damit es in 5x5 passt */
     font-weight: bold;
-    margin-top: 10px;
-    border: 2px solid #000;
-    border-radius: 8px;
-    background-color: #fff;
     cursor: pointer;
-    outline: none;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
 }
 
-button:hover {
-    background-color: #f0f0f0;
-}
-
-button:active {
-    background-color: #e0e0e0;
+.board button:hover {
+    background-color: #222;
 }
