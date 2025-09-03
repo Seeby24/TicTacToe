@@ -3,35 +3,52 @@ import {useEffect, useState} from "react";
 
 export default function Maintictactoe() {
     const size = 5;
-    const [board,setBoard] = useState(Array(size*size).fill(null))
+    const [board, setBoard] = useState(Array(size * size).fill(null))
     const [turn, setTurn] = useState("X");
-    const [gameOver,setGamover] = useState(false)
-    const [text,setText] = useState("")
+    const [gameOver, setGamover] = useState(false)
+    const [text, setText] = useState("")
+
 // Mache Zug
     function Makemove(index) {
-        if (board[index]) return;
+        if(gameOver === false) {
+            if (board[index]) return;
 
-        const newBoard = [...board];
-        newBoard[index] = turn;
-        setBoard(newBoard);
+            const newBoard = [...board];
+            newBoard[index] = turn;
+            setBoard(newBoard);
 
-        const nextTurn = turn === "X" ? "O" : "X";
-        setTurn(nextTurn);
-        setText(`Spieler ${nextTurn} ist dran`);
+            const nextTurn = turn === "X" ? "O" : "X";
+            setTurn(nextTurn);
+            setText(`Spieler ${nextTurn} ist dran`);
+        }
     }
+
 // Neustart
-    function Reset(){
-        setBoard(Array(size*size).fill(null))
+    function Reset() {
+        setBoard(Array(size * size).fill(null))
         setTurn("X");
         setGamover(false);
         setText("");
     }
-// Gewinnenfunktion
-    function CheckWinner(allLines,Board){
 
+// Gewinnenfunktion
+    function CheckWinner(allLines, Board) {
+        for (let line of allLines) {
+            const [a, b, c, d] = line; //Destructuring Assignment
+            if (
+                Board[a] !== null &&
+                Board[a] === Board[b] &&
+                Board[b] === Board[c] &&
+                Board[c] === Board[d]
+            ) {
+                return Board[a];
+            }
+        }
+        return null;
     }
+
 // Alle Linien hinzufügen
-    function Getlines(){
+    function Getlines() {
         const winLength = 4;
         const horizontalLines = [];
         const verticalLines = [];
@@ -80,41 +97,43 @@ export default function Maintictactoe() {
         }
 
 
-        const allLines = [horizontalLines,verticalLines,diagonal1Lines,diagonal2Lines];
+        const allLines = [
+            ...horizontalLines,
+            ...verticalLines,
+            ...diagonal1Lines,
+            ...diagonal2Lines];
         return allLines
 
-        console.log(allLines)
+       // console.log(allLines)
     }
+
 // Checke auf Sieg
     useEffect(() => {
-        if (CheckWinner()=== true) {
-            setGamover(true)
-            setText(`Spieler ${turn === "X" ? "O" : "X"} hat gewonnen`);
+    const winner = CheckWinner(Getlines(), board);
+    if (winner) {
+        setGamover(true);
+        setText(`Spieler ${winner} hat gewonnen`);
+    }
+}, [board]);
 
+        return (
+            <>
+                <div className="board">
+                    {board.map((cell, index) => (
+                        <Gamemap
+                            key={index}
+                            value={cell}
+                            onClick={() => Makemove(index)}
+                        />
+                    ))}
+                </div>
 
-        }
-    }, [board]);
-
-
-    return (
-        <>
-            <div className="board">
-                {board.map((cell,index) => (
-                    <Gamemap
-                        key={index}
-                        value={cell}
-                        onClick={() => Makemove(index)}
-                    />
-                ))}
-            </div>
-
-            <div>
-                <button className="reset-button" onClick={Reset}>Reset</button>
-            </div>
-            <div>
-                {text}
-            </div>
-            <button onClick={Getlines}></button>
-        </>
-    )
-}
+                <div>
+                    <button className="reset-button" onClick={Reset}>Reset</button>
+                </div>
+                <div>
+                    {text}
+                </div>
+            </>
+        )
+    }
