@@ -3,14 +3,17 @@ import {useEffect, useState} from "react";
 
 export default function Maintictactoe() {
     const size = 5;
-    const [board, setBoard] = useState(Array(size * size).fill(null))
+    const [board, setBoard] = useState(Array(size * size).fill(null));
     const [turn, setTurn] = useState("X");
-    const [gameOver, setGamover] = useState(false)
-    const [text, setText] = useState("")
+    const [gameOver, setGamover] = useState(false);
+    const [text, setText] = useState("");
+    const [history,setHistory] = useState([]);
+    const [xwins,setXWins] = useState(0);
+    const [ywins,setYWins] = useState(0)
 
 // Mache Zug
     function Makemove(index) {
-        if(gameOver === false) {
+        if (gameOver === false) {
             if (board[index]) return;
 
             const newBoard = [...board];
@@ -104,20 +107,63 @@ export default function Maintictactoe() {
             ...diagonal2Lines];
         return allLines
 
-       // console.log(allLines)
+        // console.log(allLines)
     }
 
 // Checke auf Sieg
     useEffect(() => {
-    const winner = CheckWinner(Getlines(), board);
-    if (winner) {
-        setGamover(true);
-        setText(`Spieler ${winner} hat gewonnen`);
-    }
-}, [board]);
+        const winner = CheckWinner(Getlines(), board);
+        if (winner) {
+            setGamover(true);
+            setText(`Spieler ${winner} hat gewonnen`);
+            if(history.length > 7) {
+                setHistory([])
+            }
+            history.push(winner);
+            if(winner==="X"){
+                setXWins(xwins+1)
+            }
+            else{
+                setYWins(ywins+1)
+            }
+            }
 
-        return (
-            <>
+    }, [board]);
+
+
+
+    return (
+        <>
+            <h1>TicTacToe</h1>
+            <div className="Container">
+                <div className="Box">
+                    <h2>Verlauf</h2>
+                    <div>
+                        Spieler 1: {xwins}
+                    </div>
+                    <div>
+                        Spieler 2: {ywins}
+                    </div>
+                    <div>
+                        {history.length === 0 ? "Noch kein Spiel beendet" : (
+                            <ul>
+                                {history.map((winner, index) => (
+                                    <li key={index}>
+                                        Spiel {index + 1}: {winner}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <div>
+                        <button className="reset-button" onClick={Reset}>Reset</button>
+                    </div>
+                    <div>
+                        {text}
+                    </div>
+
+                </div>
                 <div className="board">
                     {board.map((cell, index) => (
                         <Gamemap
@@ -128,12 +174,9 @@ export default function Maintictactoe() {
                     ))}
                 </div>
 
-                <div>
-                    <button className="reset-button" onClick={Reset}>Reset</button>
-                </div>
-                <div>
-                    {text}
-                </div>
-            </>
-        )
-    }
+
+
+            </div>
+        </>
+    )
+}
